@@ -135,11 +135,14 @@ class SRLModel(object):
     srl_labels = get_srl_labels(
         arg_starts, arg_ends, predicates, labels, max_sentence_length
     )  # [num_sentences, max_num_args, max_num_preds]
+    #print(srl_labels)
     srl_scores = get_srl_scores(
         arg_emb, pred_emb, arg_scores, pred_scores, len(self.data.srl_labels), self.config, self.dropout
     )  # [num_sentences, max_num_args, max_num_preds, num_labels]
+    #print(srl_scores)
     srl_loss = get_srl_softmax_loss(
         srl_scores, srl_labels, num_args, num_preds)  # [num_sentences, max_num_args, max_num_preds]
+    #print(srl_loss)
     predict_dict.update({
       "candidate_arg_scores": candidate_arg_scores,
       "candidate_pred_scores": candidate_pred_scores,

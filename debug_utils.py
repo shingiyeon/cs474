@@ -18,7 +18,7 @@ def srl_constraint_tracker(pred_to_args):
   unique_core_role_violations = 0
   continuation_role_violations = 0
   reference_role_violations = 0
-  for pred_ids, args in pred_to_args.iteritems():
+  for pred_ids, args in pred_to_args.items():
     # Sort by span start, assuming they are not overlapping.
     sorted_args = sorted(args, key=lambda x: x[0], reverse=True)
     core_args = set()

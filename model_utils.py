@@ -45,7 +45,7 @@ def batch_gather(emb, indices):
 def lstm_contextualize(text_emb, text_len, config, lstm_dropout):
   num_sentences = tf.shape(text_emb)[0]
   current_inputs = text_emb  # [num_sentences, max_sentence_length, emb]
-  for layer in xrange(config["contextualization_layers"]):
+  for layer in range(config["contextualization_layers"]):
     with tf.variable_scope("layer_{}".format(layer)):
       with tf.variable_scope("fw_cell"):
         cell_fw = util.CustomLSTMCell(config["contextualization_size"], num_sentences, lstm_dropout)
@@ -252,8 +252,9 @@ def get_srl_labels(arg_starts, arg_ends, predicates, labels, max_sentence_length
   dense_srl_labels = get_dense_span_labels(
       labels["arg_starts"], labels["arg_ends"], labels["arg_labels"], labels["srl_len"], max_sentence_length,
       span_parents=labels["predicates"])  # [num_sentences, max_sent_len, max_sent_len, max_sent_len]
- 
+  print("dense_srl_labels: ", dense_srl_labels)
   srl_labels = tf.gather_nd(params=dense_srl_labels, indices=pred_indices)  # [num_sentences, max_num_args]
+  print("srl_labels: ", srl_labels)
   return srl_labels
 
 
@@ -267,10 +268,16 @@ def get_dense_span_labels(span_starts, span_ends, span_labels, num_spans, max_se
     max_sentence_length:
     span_parents: [num_sentences, max_num_spans]. Predicates in SRL.
   """
+  print("span_starts: ",span_starts)
+  print("span_ends: ", span_ends)
+  print("span_labels: ", span_labels)
+  print("num_spans: ", num_spans)
+  print("max_sen_len: ", max_sentence_length)
   num_sentences = util.shape(span_starts, 0)
   max_num_spans = util.shape(span_starts, 1)
   # For padded spans, we have starts = 1, and ends = 0, so they don't collide with any existing spans.
   span_starts += (1 - tf.sequence_mask(num_spans, dtype=tf.int32))  # [num_sentences, max_num_spans]
+  print("padded_span_starts: ", span_starts)
   sentence_indices = tf.tile(
       tf.expand_dims(tf.range(num_sentences), 1),
       [1, max_num_spans])  # [num_sentences, max_num_spans]
@@ -283,6 +290,10 @@ def get_dense_span_labels(span_starts, span_ends, span_labels, num_spans, max_se
       sparse_indices, tf.expand_dims(span_parents, 2)], axis=2)  # [num_sentenes, max_num_spans, 4]
 
   rank = 3 if (span_parents is None) else 4
+  print("rank: ", rank)
+  print("tf.reshape: ", tf.reshape(sparse_indices, [num_sentences * max_num_spans, rank]))
+  print("output_shape: ", [num_sentences] + [max_sentence_length] * (rank -1))
+  print("sparse_values: ", tf.reshape(span_labels, [-1]))
   # (sent_id, span_start, span_end) -> span_label
   dense_labels = tf.sparse_to_dense(
       sparse_indices = tf.reshape(sparse_indices, [num_sentences * max_num_spans, rank]),

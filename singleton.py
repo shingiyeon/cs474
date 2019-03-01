@@ -26,11 +26,11 @@ if __name__ == "__main__":
   config["log_dir"] = util.mkdirs(os.path.join(config["log_root"], name))
   util.print_config(config)
 
-  if "GPU" in os.environ:
-    gpus = [int(g) for g in os.environ["GPU"].split(",")]
-    util.set_gpus(*gpus)
-  else:
-    util.set_gpus()
+#  if "GPU" in os.environ:
+#    gpus = [int(g) for g in os.environ["GPU"].split(",")]
+#    util.set_gpus(*gpus)
+#  else:
+#    util.set_gpus()
 
   data = LSGNData(config)
   model = SRLModel(data, config)
@@ -63,7 +63,7 @@ if __name__ == "__main__":
         steps_per_second = tf_global_step / total_time
 
         average_loss = accumulated_loss / report_frequency
-        print "[{}] loss={:.2f}, steps/s={:.2f}".format(tf_global_step, average_loss, steps_per_second)
+        print ("[{}] loss={:.2f}, steps/s={:.2f}".format(tf_global_step, average_loss, steps_per_second))
         writer.add_summary(util.make_summary({"loss": average_loss}), tf_global_step)
         accumulated_loss = 0.0
 

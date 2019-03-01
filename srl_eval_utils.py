@@ -59,18 +59,18 @@ def evaluate_retrieval(span_starts, span_ends, span_scores, pred_starts, pred_en
         predicted_starts = pred_starts
         predicted_ends = pred_ends
         if debugging:
-          print "Predicted", zip(sorted_starts, sorted_ends, sorted_scores)[:len(gold_spans)]
-          print "Gold", gold_spans
+          print("Predicted", zip(sorted_starts, sorted_ends, sorted_scores)[:len(gold_spans)])
+          print("Gold", gold_spans)
      # FIXME: scalar index error
       elif k == 0:
         is_predicted = span_scores > 0
-        predicted_starts = span_starts[is_predicted]
-        predicted_ends = span_ends[is_predicted]
+        predicted_starts = [span_starts[is_predicted]]
+        predicted_ends = [span_ends[is_predicted]]
       else:
         if k == -1:
           num_predictions = len(gold_spans)
         else:
-          num_predictions = (k * text_length) / 100
+          num_predictions = int((k * text_length) / 100)
         predicted_starts = sorted_starts[:num_predictions]
         predicted_ends = sorted_ends[:num_predictions]
       predicted_spans = set(zip(predicted_starts, predicted_ends))
@@ -176,7 +176,7 @@ def compute_srl_f1(sentences, gold_srl, predictions, srl_conll_eval_path):
 
   # Prepare to compute official F1.
   if not srl_conll_eval_path:
-    print "No gold conll_eval data provided. Recreating ..."
+    print("No gold conll_eval data provided. Recreating ...")
     gold_path = "/tmp/srl_pred_%d.gold" % os.getpid()
     print_to_conll(sentences, gold_srl, gold_path, None)
     gold_predicates = None

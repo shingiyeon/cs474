@@ -47,8 +47,8 @@ class LSGNData(object):
     self.lm_size = 0
     if config["lm_path"]:
       if "tfhub" in config["lm_path"]:
-        print "Using tensorflow hub:", config["lm_path"]
-        self.lm_hub = hub.Module(config["lm_path"].encode("utf-8"), trainable=False) 
+        print("Using tensorflow hub:", config["lm_path"])
+        self.lm_hub = hub.Module(config["lm_path"], trainable=False) 
       else:
         self.lm_file = h5py.File(self.config["lm_path"], "r")
       self.lm_layers = self.config["lm_layers"]
@@ -128,6 +128,7 @@ class LSGNData(object):
         num_tokens_in_batch = 0
         for examples in doc_examples:
           tensor_examples = [self.tensorize_example(e, is_training=True) for e in examples]
+          #print(tensor_examples)
           if self.config["batch_size"] == -1:
             # Random truncation.
             num_sents = len(tensor_examples)
@@ -217,9 +218,11 @@ class LSGNData(object):
       context_word_emb[j] = self.context_embeddings[word]
       head_word_emb[j] = self.head_embeddings[word]
       char_index[j, :len(word)] = [self.char_dict[c] for c in word]
+    #print(example["srl"])
     predicates, arg_starts, arg_ends, arg_labels = (
         tensorize_srl_relations(example["srl"], self.srl_labels,
                                 filter_v_args=self.config["filter_v_args"]))
+    #print(predicates, arg_starts, arg_ends, arg_labels)
     # For gold predicate experiment.
     gold_predicates = get_all_predicates(example["srl"]) - word_offset
     example_tensor = {
@@ -241,6 +244,7 @@ class LSGNData(object):
       "arg_labels": arg_labels,
       "srl_len": len(predicates),
     }
+    #print("example_tensor: ", example_tensor['predicates'], example_tensor['arg_starts'], example_tensor['arg_ends'], example_tensor['arg_labels'], example_tensor['srl_len'])
     return example_tensor
 
   def load_eval_data(self):

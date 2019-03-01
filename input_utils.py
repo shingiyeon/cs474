@@ -22,10 +22,12 @@ def tensorize_srl_relations(tuples, label_dict, filter_v_args):
   else:
     filtered_tuples = [t for t in tuples if t[-1] != "V"]
     # filtered_tuples = tuples
+  #print("input_utils: ", filtered_tuples)
   if len(filtered_tuples) > 0:
     heads, starts, ends, labels = zip(*filtered_tuples)
   else:
     heads, starts, ends, labels = [], [], [], []
+  #print("heads, starts, ends, labels: ", heads, starts, ends, labels)
   return (np.array(heads), np.array(starts), np.array(ends),
           np.array([label_dict.get(c, 0) for c in labels]))
 
@@ -61,14 +63,28 @@ def pad_batch_tensors(tensor_dicts, tensor_name):
   Returns:
     Numpy array of (B, ?)
   """
+  #print("tensor_dicts: ", tensor_dicts)
+  #print("tensor_name: ", tensor_name)
+  #print("pad_batch_tensors")
+  #print("tensor_dicts: ", tensor_dicts)
+  #print("tensor_name: ",tensor_name)
   batch_size = len(tensor_dicts)
+  #print("batch_size :", batch_size)
   tensors = [np.expand_dims(td[tensor_name], 0) for td in tensor_dicts]
-  shapes = [t.shape for t in tensors] 
-  # Take max shape along each dimension.
-  max_shape = np.max(zip(*shapes), axis=1)
+  shapes = [list(t.shape) for t in tensors] 
+  #print("originalshapes: ",shapes)
+  # Take max shape along each dimension. 
+  #print("zip: ",list(zip(*shapes)))
+  max_shape = np.max(list(zip(*shapes)), axis=1)
+  #print("shapes: ",shapes)
+  #print("max_shape: ",max_shape)
+  #print("t_shape[0].shape: ",tensors[0].shape)
+  #print("t_shape[1].shape: ",tensors[1].shape)
+  #print("max_shapes: ",max_shapes)
   #print tensor_name, batch_size, tensors[0].shape, max_shape
   zeros = np.zeros_like(max_shape)
-  padded_tensors = [np.pad(t, zip(zeros, max_shape - t.shape), "constant") for t in tensors]
+  padded_tensors = [np.pad(t, list(zip(zeros, max_shape - t.shape)), "constant") for t in tensors]
+  #print(padded_tensors)
   return np.concatenate(padded_tensors, axis=0)
 
 

@@ -83,12 +83,12 @@ class LSGNEvaluator(object):
           gold_args = set([])
           gold_preds = set([])
           guessed_preds = set([])
-          for pred, args in sent_example[1].iteritems():
+          for pred, args in sent_example[1].items():
             filtered_args = [(a[0], a[1]) for a in args if a[2] not in ["V", "C-V"]]
             if len(filtered_args) > 0:
               gold_preds.add((pred, pred))
               gold_args.update(filtered_args)
-          for pred, args in decoded_predictions["srl"][j].iteritems():
+          for pred, args in decoded_predictions["srl"][j].items():
             guessed_preds.add((pred, pred, "V"))
           all_gold_predicates.append([(p[0], p[1], "V") for p in gold_preds])
           all_guessed_predicates.append(guessed_preds)
@@ -145,7 +145,7 @@ class LSGNEvaluator(object):
       summary_dict["Unique core violations/Predicate"] = 1.0 * unique_core_role_violations / total_num_predicates
       summary_dict["Continuation violations/Predicate"] = 1.0 * continuation_role_violations / total_num_predicates
       summary_dict["Reference violations/Predicate"] = 1.0 * reference_role_violations / total_num_predicates
-    print "Completely correct sentences: {}/{}".format(comp, 100.0 * comp / len(srl_predictions))
+    print ("Completely correct sentences: {}/{}".format(comp, 100.0 * comp / len(srl_predictions)))
 
     for k, evaluator in sorted(arg_evaluators.items(), key=operator.itemgetter(0)):
       tags = ["{} {} @ {}".format("Args", t, _k_to_tag(k)) for t in ("R", "P", "F")]
@@ -153,7 +153,7 @@ class LSGNEvaluator(object):
       for t, v in zip(tags, evaluator.metrics()):
         results_to_print.append("{:<10}: {:.4f}".format(t, v))
         summary_dict[t] = v
-      print ", ".join(results_to_print)
+      print (", ".join(results_to_print))
 
     for k, evaluator in sorted(predicate_evaluators.items(), key=operator.itemgetter(0)):
       tags = ["{} {} @ {}".format("Predicates", t, _k_to_tag(k)) for t in ("R", "P", "F")]
@@ -161,7 +161,7 @@ class LSGNEvaluator(object):
       for t, v in zip(tags, evaluator.metrics()):
         results_to_print.append("{:<10}: {:.4f}".format(t, v))
         summary_dict[t] = v
-      print ", ".join(results_to_print)
+      print (", ".join(results_to_print))
 
     if total_num_predicates > 0:
       print ("Constraint voilations: U: {} ({}), C: {} ({}), R: {} ({})".format(
@@ -178,13 +178,13 @@ class LSGNEvaluator(object):
     #    print ("{}\t{}\t{}".format(label_pair[0], label_pair[1], freq))
 
     summary_dict["Dev Loss"] = total_loss / len(self.coref_eval_data)
-    print "Decoding took {}.".format(str(datetime.timedelta(seconds=int(elapsed_time))))
-    print "Decoding speed: {}/document, or {}/sentence.".format(
+    print( "Decoding took {}.".format(str(datetime.timedelta(seconds=int(elapsed_time)))))
+    print( "Decoding speed: {}/document, or {}/sentence.".format(
         str(datetime.timedelta(seconds=int(elapsed_time / len(self.coref_eval_data)))),
         str(datetime.timedelta(seconds=int(elapsed_time / len(self.eval_data))))
-    )
+    ))
     metric_names = self.config["main_metrics"].split("_")
     main_metric = sum([task_to_f1[t] for t in metric_names]) / len(metric_names)
-    print "Combined metric ({}): {}".format(self.config["main_metrics"], main_metric)
+    print ("Combined metric ({}): {}".format(self.config["main_metrics"], main_metric))
     return util.make_summary(summary_dict), main_metric, task_to_f1
 
