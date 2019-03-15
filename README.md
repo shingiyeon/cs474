@@ -1,4 +1,21 @@
-# Labeled Span Graph Network (Under Construction)
+# Rich Context Competition
+
+2018년 12월 Rich Context Competition에서 사용된 Method 모듈.
+
+## 방식
+
+Metadata에서 언급된 실험 방법 목록들을 쭉 뽑은 후, Publication에서 추출된 실험 방법이 나올 경우 해당 문장의 서술 추출.
+이후 해당 문장의 서술어와 실험 방법을 묶어서 Argument Identification 진행.
+
+단 이 때, argument는 단 하나인 실험 방법밖에 존재하질 않으며,
+해당 방법을 이용한 이유는 Metadata에서 언급되지 않은 실험 방법을 추출하기 위함.
+
+## Reference
+밑 논문과 동일한 방법론.
+Metadata와 Publication에서 데이터를 생성하는 코드를 밑 논문의 코드에 추가함.
+
+
+## Labeled Span Graph Network (Under Construction)
 
 This repository contains code and models for replicating results from the following publication:
 * [Jointly Predicting Predicates and Arguments in Neural Semantic Role Labeling](https://arxiv.org/abs/1805.04787)
